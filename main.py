@@ -70,9 +70,11 @@ class LocationArea(Resource):
 
         grid = {}
 
+        radiusOffset = int(math.ceil(radius/2))
+
         for ax in range(radius):
             for ay in range(radius):
-                location = locations.find_one({'_id': (str(int(x)+ax) + ',' + str(int(y)+ay))})
+                location = locations.find_one({'_id': (str(int(x)+ax-radiusOffset) + ',' + str(int(y)+ay-radiusOffset))})
                 print(location)
                 if location != None:
                     if not ax in grid:
