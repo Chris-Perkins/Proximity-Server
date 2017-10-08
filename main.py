@@ -58,7 +58,7 @@ class Location(Resource):
             return ""
 
         url = location['url']
-        return url
+        return {'url': url}
 
 class LocationArea(Resource):
     def get(self, x, y):
