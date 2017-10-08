@@ -14,35 +14,42 @@ mongo = PyMongo(app)
 api = Api(app)
 
 radius = 21
-urlRegex = re.compile('https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)')
+urlRegex = re.compile(r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
 
 clientId = random.randint(0,999999)
 
 class Location(Resource):
     def post(self, x, y):
         if not x.isdigit() or not y.isdigit():
-            return "Invalid request: invalid coordinates", 400
+            return "invalid coordinates", 400
 
         locations = mongo.db.locations
 
+        location = locations.find_one({'_id': str(x) + ',' + str(y)})
+        if location:
+            return "coordinates already claimed", 400
+
         data = request.get_json(force=True)
 
+        print(data)
         if not 'url' in data:
             return "null url", 400
 
         url = data['url']
 
         if not urlRegex.match(url):
-            return "Invalid request: null url", 400
+            return "invalid url", 400
 
         location = {'_id': str(x)+','+str(y),
                 'url': url}
 
         locations.insert(location)
 
+        return "Url posted!"
+
     def get(self, x, y):
         if not x.isdigit() or not y.isdigit():
-            return "Invalid request: invalid coordinates", 400
+            return "invalid coordinates", 400
 
         locations = mongo.db.locations
         location = locations.find_one({'_id': str(x)+','+str(y)})
