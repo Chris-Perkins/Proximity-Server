@@ -21,7 +21,7 @@ clientId = random.randint(0,999999)
 
 class Location(Resource):
     def post(self, x, y):
-        if not x.isdigit() or not y.isdigit():
+        if not isInt(x) or not isInt(y):
             return "invalid coordinates", 400
 
         locations = mongo.db.locations
@@ -63,7 +63,7 @@ class Location(Resource):
 
 class LocationArea(Resource):
     def get(self, x, y):
-        if not x.isdigit() or not y.isdigit():
+        if not isInt(x) or not isInt(y):
             return "Invalid request: invalid coordinates", 400
 
         locations = mongo.db.locations
