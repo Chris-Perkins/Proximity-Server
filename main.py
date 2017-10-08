@@ -46,11 +46,11 @@ class Location(Resource):
 
         locations = mongo.db.locations
         location = locations.find_one({'_id': str(x)+','+str(y)})
-        url = location['url']
 
         if location == None:
             return ""
 
+        url = location['url']
         return url
 
 class LocationArea(Resource):
