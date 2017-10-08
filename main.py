@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_pymongo import PyMongo
+from isInteger import isInt
 import random
 import re
 import math
@@ -13,7 +14,7 @@ app.config['MONGO_URI'] = 'mongodb://grant:chrisisstupid123@ds115045.mlab.com:15
 mongo = PyMongo(app)
 api = Api(app)
 
-radius = 21
+radius = 5
 urlRegex = re.compile(r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
 
 clientId = random.randint(0,999999)
@@ -48,14 +49,14 @@ class Location(Resource):
         return "Url posted!"
 
     def get(self, x, y):
-        if not x.isdigit() or not y.isdigit():
+        if not isInt(x) or not isInt(y):
             return "invalid coordinates", 400
 
         locations = mongo.db.locations
         location = locations.find_one({'_id': str(x)+','+str(y)})
 
         if location == None:
-            return ""
+            return {'url': ""}
 
         url = location['url']
         return {'url': url}
@@ -71,14 +72,15 @@ class LocationArea(Resource):
 
         radiusOffset = int(math.ceil(radius/2))
 
-        for ax in range(int(x)-radiusOffset, int(x)+radiusOffset):
-            for ay in range(int(y)-radiusOffset, int(y)+radiusOffset):
-                location = locations.find_one({'_id': str(ax) + ',' + str(ay)})
+        for ax in range(radius):
+            for ay in range(radius):
+                location = locations.find_one({'_id': (str(int(x)+ax-radiusOffset) + ',' + str(int(y)+ay-radiusOffset))})
+                print(location)
                 if location != None:
-                    if grid[x] == None:
-                        grid[x] = {}
-
-                    grid[x][y] = location['url']
+                    if not ax in grid:
+                        grid[ax] = {}
+                        
+                    grid[ax][ay] = location['url']
 
         return grid
 
