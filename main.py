@@ -15,7 +15,7 @@ clientId = random.randint(0,999999)
 
 class Location(Resource):
     def post(self, x, y):
-        if not x.isdigit() and not y.isdigit():
+        if not x.isdigit() or not y.isdigit():
             return {
                 "invalid coordinates"
             }, 400
@@ -30,7 +30,7 @@ class Location(Resource):
         locations.insert(location)
 
     def get(self, x, y):
-        if not x.isdigit() and not y.isdigit():
+        if not x.isdigit() or not y.isdigit():
             return {
                 "invalid coordinates"
             }, 400
